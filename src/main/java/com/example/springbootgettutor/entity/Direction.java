@@ -17,7 +17,7 @@ public class Direction {
     private String name;
 
     @OneToMany(mappedBy = "direction")
-    private List<DirctionElective> dirctionElectives;
+    private List<DirectionElective> dirctionElectives;
 
 
     @Column(columnDefinition = "timestamp default current_timestamp",

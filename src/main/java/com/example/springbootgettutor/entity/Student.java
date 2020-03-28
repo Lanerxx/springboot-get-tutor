@@ -23,7 +23,7 @@ public class Student {
     @OneToMany(mappedBy = "student")
     private List<Elective> electives;
     @OneToMany(mappedBy = "student")
-    private List<DirctionElective> dirctionElectives;
+    private List<DirectionElective> dirctionElectives;
 
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,

@@ -1,9 +1,6 @@
 package com.example.springbootgettutor.service;
 
-import com.example.springbootgettutor.entity.Course;
-import com.example.springbootgettutor.entity.Direction;
-import com.example.springbootgettutor.entity.Student;
-import com.example.springbootgettutor.entity.Tutor;
+import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,8 @@ public class InformationService {
 
     //Tutor
     public Tutor addTutor(Tutor tutor){
-        return tutorRepository.save(tutor);
+        tutorRepository.save(tutor);
+        return tutor;
     }
 
     public Tutor getTutor(String name){
@@ -66,7 +64,8 @@ public class InformationService {
 
     //Student
     public Student addStudent(Student student){
-        return studentRepository.save(student);
+        studentRepository.save(student);
+        return student;
     }
 
     public List<Student> getStudentByName(String name){
@@ -113,7 +112,8 @@ public class InformationService {
 
     //Course
     public Course addCourse(Course course){
-        return courseRepository.save(course);
+        courseRepository.save(course);
+        return course;
     }
 
     public List<Course> getCourseByName(String name){
@@ -149,7 +149,8 @@ public class InformationService {
 
     //Direction
     public Direction addDirection(Direction direction){
-        return directionRepository.save(direction);
+        directionRepository.save(direction);
+        return direction;
     }
 
     public Direction getDirection(String name){
@@ -172,5 +173,86 @@ public class InformationService {
     public void deleteAllDirection(){
         directionRepository.deleteAll();
     }
+
+    //Elective
+    public Elective addElective(Elective elective){
+        electiveRepository.save(elective);
+        return elective;
+    }
+
+    public Elective addElective(int studentId, int courseId){
+        Student student = informationService.getStudentById(studentId);
+        Course course = informationService.getCourseById(courseId);
+        Elective elective = new Elective();
+        elective.setStudent(student);
+        elective.setCourse(course);
+        electiveRepository.save(elective);
+        return elective;
+    }
+
+    public Elective getElective(int studentId, int courseId){
+        return electiveRepository.getElective(studentId, courseId).orElse(null);
+    }
+
+    public List<Elective> getElectivesByStudentName(String studentName){
+        return electiveRepository.getElectivesByStudentName(studentName).orElse(null);
+    }
+
+    public List<Elective> getElectivesByStudentNumber(String studentNumber){
+        return electiveRepository.getElectivesByStudentNumber(studentNumber).orElse(null);
+    }
+
+    public List<Elective> getElectivesByStudentId(int id){
+        return electiveRepository.getElectivesStudentId(id).orElse(null);
+    }
+
+    public List<Elective> getElectivesByCourse(String name){
+        return electiveRepository.getElectivesByCourseName(name).orElse(null);
+    }
+
+    public List<Elective> getElectivesByCourse(int id){
+        return electiveRepository.getElectivesCourseId(id).orElse(null);
+    }
+
+    public List<Elective> getAllElectives(){
+        return electiveRepository.list().orElse(null);
+    }
+
+    public Elective updateGrade(float grade, int studentId, int courseID){
+        electiveRepository.updateGrade(grade, studentId, courseID);
+        return informationService.getElective(studentId, courseID);
+    }
+
+    //DirectiveElective
+    public DirectionElective addDirectiveElective(DirectionElective dirctionElective){
+        directionElectiveRepository.save(dirctionElective);
+        return dirctionElective;
+    }
+
+    public List<DirectionElective> getDirectiveElectivesByStudentName(String name){
+        return directionElectiveRepository.getDirectionElectivesByStudentName(name).orElse(null);
+    }
+
+    public List<DirectionElective> getDirectiveElectivesByStudentNumber(String studentNumber){
+        return directionElectiveRepository.getDirectionElectivesByStudentNumber(studentNumber)
+                .orElse(null);
+    }
+
+    public List<DirectionElective> getDirectiveElectivesByStudentId(int id){
+        return directionElectiveRepository.getDirectionElectivesStudentId(id).orElse(null);
+    }
+
+    public List<DirectionElective> getDirectiveElectivesByDirection(String name){
+        return directionElectiveRepository.getDirectionElectivesByDirection(name).orElse(null);
+    }
+
+    public List<DirectionElective> getDirectiveElectivesByDirection(int id){
+        return directionElectiveRepository.getDirectionElectivesByDirection(id).orElse(null);
+    }
+
+
+
+
+
 
 }

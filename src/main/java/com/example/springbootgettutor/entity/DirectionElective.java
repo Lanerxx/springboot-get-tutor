@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @NoArgsConstructor
-public class DirctionElective {
+public class DirectionElective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
