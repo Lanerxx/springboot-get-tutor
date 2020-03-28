@@ -1,6 +1,5 @@
 package com.example.springbootgettutor.entity;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,19 +10,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-public class Student {
+public class Direction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private String studentNumber;
-    private String password;
 
-    @ManyToOne
-    Tutor tutor;
-    @OneToMany(mappedBy = "student")
-    private List<Elective> electives;
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "direction")
     private List<DirctionElective> dirctionElectives;
+
 
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,
@@ -34,5 +29,4 @@ public class Student {
             insertable = false,
             updatable = false)
     private LocalDateTime updateTime;
-
 }

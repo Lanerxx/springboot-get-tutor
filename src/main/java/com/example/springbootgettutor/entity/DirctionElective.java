@@ -1,29 +1,25 @@
 package com.example.springbootgettutor.entity;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
-public class Student {
+public class DirctionElective {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String studentNumber;
-    private String password;
+    private String datail;
+
 
     @ManyToOne
-    Tutor tutor;
-    @OneToMany(mappedBy = "student")
-    private List<Elective> electives;
-    @OneToMany(mappedBy = "student")
-    private List<DirctionElective> dirctionElectives;
+    private Student student;
+    @ManyToOne
+    private DirctionElective dirctionElective;
 
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,

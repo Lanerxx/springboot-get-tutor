@@ -17,6 +17,7 @@ public class Tutor {
     private String name;
     private int sumCount;
     private int remainCount;
+    private String password;
 
     @OneToMany(mappedBy = "tutor")
     private List<Student> students;
@@ -24,6 +25,11 @@ public class Tutor {
     @OneToMany(mappedBy = "tutor")
     private List<Course> courses;
 
+
+    @Column(columnDefinition = "timestamp default current_timestamp",
+            insertable = false,
+            updatable = false)
+    private LocalDateTime insertTime;
     @Column(columnDefinition = "timestamp default current_timestamp " +
             "on update current_timestamp",
             insertable = false,

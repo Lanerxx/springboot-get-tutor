@@ -1,0 +1,13 @@
+package com.example.springbootgettutor.repository;
+
+import com.example.springbootgettutor.entity.Direction;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface DirectionRepository extends BaseRepository<Direction,Integer>{
+    @Query("SELECT Direction d")
+    List<Direction> list();
+}
