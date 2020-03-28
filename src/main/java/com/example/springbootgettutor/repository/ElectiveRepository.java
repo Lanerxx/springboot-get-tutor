@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ElectiveRepository extends BaseRepository<Elective,Integer>{
     @Query("FROM Elective ele")
-    List<Elective> list();
+    Optional<List<Elective>> list();
 
 }

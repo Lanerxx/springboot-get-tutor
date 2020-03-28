@@ -19,7 +19,7 @@ public class DirctionElective {
     @ManyToOne
     private Student student;
     @ManyToOne
-    private DirctionElective dirctionElective;
+    private Direction direction;
 
     @Column(columnDefinition = "timestamp default current_timestamp",
             insertable = false,
