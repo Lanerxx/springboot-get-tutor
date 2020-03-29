@@ -116,6 +116,10 @@ public class InformationService {
         return course;
     }
 
+    public List<Course> getCourseByTutor(int id){
+        return courseRepository.getCourseByTutor(id).orElse(null);
+    }
+
     public List<Course> getCourseByName(String name){
         return courseRepository.findByName(name).orElse(null);
     }
