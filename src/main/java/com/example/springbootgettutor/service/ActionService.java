@@ -17,6 +17,16 @@ public class ActionService {
     private InformationService informationService;
     @Autowired
     private ActionService actionService;
+    /**
+     * @describtion: Elected in advance（Only teachers have authority）
+     * @param: [Student,tutor]
+     * @return: java.util.Map<entity.Student,java.lang.Float>
+     */
+    public Student electedAdvance(Student student,Tutor tutor){
+        informationService.updateTutor(student.getId(), tutor);
+        informationService.updateTutorRemainCount(tutor.getId(), 1);
+        return informationService.getStudentById(student.getId());
+    }
 
 
     /**

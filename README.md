@@ -16,7 +16,13 @@
 * Start by designing entity class carefully
 * To understand how to use OneToMany and ManyToMany correctly
 * Learning how to use mysql on the command line
-
+* Map sets are difficult to use but powerful
+* Not sure how to divide the business and the control layer
+* Not sure how to divide the subfunctions
+* Not sure how to simplify the subfunctions
+* Don't know how to express it accurately in English
+* Waiting for Bo to criticize and then I'll correct it,hahahaha
+ 
 
 ### Development Environments
 Development environment/framework and version:

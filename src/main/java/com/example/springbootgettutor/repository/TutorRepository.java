@@ -15,6 +15,14 @@ public interface TutorRepository extends BaseRepository<Tutor, Integer> {
     Optional<List<Tutor>> list();
 
     @Modifying
+    @Query("UPDATE Tutor t SET t.sumCount=:sumCount WHERE t.id=:id")
+    int updateSumCount(@Param("sumCount")int sumCount,@Param("id") int id);
+
+    @Modifying
+    @Query("UPDATE Tutor t SET t.remainCount=:remainCount WHERE t.id=:id")
+    int updateRemainCount(@Param("remainCount")int remainCount,@Param("id") int id);
+
+    @Modifying
     @Query("UPDATE Tutor t SET t.password=:password WHERE t.id=:id")
     int updatePassword(@Param("password")String password,@Param("id") int id);
 

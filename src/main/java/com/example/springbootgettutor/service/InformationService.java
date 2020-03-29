@@ -50,6 +50,18 @@ public class InformationService {
         return informationService.getTutor(id);
     }
 
+    public Tutor updateTutorSumCount(int tutorId,int sumCount){
+        tutorRepository.updateSumCount(sumCount, tutorId);
+        informationService.updateTutorRemainCount(tutorId,0);
+        return informationService.getTutor(tutorId);
+    }
+
+    public Tutor updateTutorRemainCount(int tutorID,int addCount){
+        int remainCount = informationService.getTutor(tutorID).getSumCount() - addCount;
+        tutorRepository.updateRemainCount(remainCount,tutorID);
+        return informationService.getTutor(tutorID);
+    }
+
     public void deleteTutor(String name){
         tutorRepository.deleteByName(name);
     }
