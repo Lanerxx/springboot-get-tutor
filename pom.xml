@@ -54,6 +54,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- add junit version -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
