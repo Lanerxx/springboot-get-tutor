@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 public class User {
     public enum Role {
-        STUDENT, TUTOR
+        STUDENT, TUTOR, ADMIN
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
