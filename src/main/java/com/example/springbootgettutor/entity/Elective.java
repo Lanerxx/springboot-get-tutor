@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,6 +15,8 @@ public class Elective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Max(value = 100, message = "The grade should be between 0 and 100")
+    @Min(value = 0, message = "The grade mark should be between 0 and 100")
     private float grade;
 
     @ManyToOne

@@ -4,6 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,10 +17,15 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank
     private String name;
 
+    @Max(value = 1, message = "The weight should be between 0 and 1")
+    @Min(value = 0, message = "The weight should be between 0 and 1")
+    private float weight;
+    @Max(value = 100, message = "The lowest mark should be between 0 and 100")
+    @Min(value = 0, message = "The lowest mark should be between 0 and 100")
     private float lowestMark;
-    private float intentionWeight;
 
     @ManyToOne
     private Tutor tutor;

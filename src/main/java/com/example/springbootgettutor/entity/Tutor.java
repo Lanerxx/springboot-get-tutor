@@ -1,29 +1,34 @@
 package com.example.springbootgettutor.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
+@JsonIgnoreProperties({"courses", "students"})
 public class Tutor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private int sumCount;
-    private int remainCount;
-    private String password;
-
-    @OneToMany(mappedBy = "tutor")
-    private List<Student> students;
+    private Integer id;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @MapsId
+    private User user;
+    @PositiveOrZero
+    private Integer quantity;
+    @PositiveOrZero
+    private Integer ranges;
 
     @OneToMany(mappedBy = "tutor")
     private List<Course> courses;
+    @OneToMany(mappedBy = "tutor")
+    private List<Student> students;
 
 
     @Column(columnDefinition = "timestamp default current_timestamp",
