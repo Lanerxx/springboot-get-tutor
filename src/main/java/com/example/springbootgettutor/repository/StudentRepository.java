@@ -15,18 +15,16 @@ public interface StudentRepository extends BaseRepository<Student, Integer> {
     @Query("SELECT stu FROM Student stu")
     Optional<List<Student>> list();
 
-    @Modifying
-    @Query("UPDATE Student s SET s.password=:password WHERE s.id=:id")
-    int updatePassword(@Param("password")String password,@Param("id") int id);
+    Optional<Student> findById (int  id);
+
+    @Query("SELECT s FROM Student  s WHERE s.tutor.id=:id")
+    Optional<List<Student>> getStudentsByTutorId (@Param("id")int id);
+
 
     @Modifying
     @Query("UPDATE Student s SET s.tutor=:tutor WHERE s.id=:id")
     int updateTutor(@Param("tutor") Tutor tutor, @Param("id") int id);
 
-    Optional<List<Student>> findByName(String name);
-    Optional<Student> findByStudentNumber(String studentNumber);
-    Optional<Student> findById (int  id);
-    void deleteByName(String name);
-    void deleteByStudentNumber(String studentNumber);
+    void deleteById(int id);
 
 }

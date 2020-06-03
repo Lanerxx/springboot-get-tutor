@@ -22,11 +22,8 @@ public interface CourseRepository extends BaseRepository<Course, Integer> {
     int updateLowestMark(@Param("lowestMark") float lowestMark,@Param("id")int id);
 
     @Modifying
-    @Query("UPDATE Course c SET c.intentionWeight=:intentionWeight WHERE c.id=:id")
+    @Query("UPDATE Course c SET c.weight=:intentionWeight WHERE c.id=:id")
     int updateIntentionWeight(@Param("intentionWeight")float intentionWeight,@Param("id")int id);
 
-    Optional<List<Course>> findByName(String name);
     void deleteByName(String name);
-
-
 }
