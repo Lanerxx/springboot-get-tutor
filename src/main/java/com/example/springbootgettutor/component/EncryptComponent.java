@@ -35,7 +35,7 @@ public class EncryptComponent {
             return encryptor.encrypt(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
         }
     }
 
@@ -45,7 +45,7 @@ public class EncryptComponent {
             return objectMapper.readValue(json, MyToken.class);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Without permission, please check it and try again.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Without permission");
         }
     }
 }
