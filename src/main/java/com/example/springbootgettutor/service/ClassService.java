@@ -38,7 +38,7 @@ public class ClassService {
     }
 
 
-    public void deletCourse(int id){
+    public void deleteCourse(int id){
         courseRepository.deleteById(id);
     }
 
