@@ -17,10 +17,9 @@
 * To understand how to use OneToMany and ManyToMany correctly
 * Learning how to use mysql on the command line
 * Map sets are difficult to use but powerful
-* Not sure how to divide the business and the control layer
-* Not sure how to divide and simplify the subfunctions
-* Don't know how to express it accurately in English
-* Waiting for Bo to criticize and then I'll correct it,hahahaha
+* Use the common primary key to contact the user and tutor and student entities instead of inheritance relationships.
+* Sensitive information such as passwords and identities need to be encrypted for transmission and should be ignored when serialized.
+* Instead of traditional authentication, headers in HTTP carry encrypted permission information.
  
 
 ### Development Environments
