@@ -14,7 +14,10 @@ public interface ElectiveRepository extends BaseRepository<Elective,Integer>{
     Optional<List<Elective>> list();
 
     @Query("SELECT ele FROM Elective ele WHERE ele.student.id=:studentId AND ele.course.id=:courseId")
-    Optional<Elective> getElective(@Param("studentId")int studentId,@Param("courseId")int courseId);
+    Optional<Elective> getElectivesByStudentIdAndCourseId(@Param("studentId")int studentId,@Param("courseId")int courseId);
+
+//    @Query("SELECT ele FROM Elective ele WHERE ele.student.id=:studentId AND ele.course.tutor.id")
+//    Optional<List<Elective>> getElectivesByStudentIdAndTutorId(@Param("studentId")int studentId,@Param("TutorId")int TutorId);
 
     @Query("SELECT ele FROM Elective ele WHERE ele.student.id=:id")
     Optional<List<Elective>> getElectivesStudentId(@Param("id")int id);

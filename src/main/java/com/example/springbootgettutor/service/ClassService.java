@@ -88,8 +88,21 @@ public class ClassService {
                 .orElse(List.of());
     }
 
+    public Elective getElectiveByStudentIdAndCourseId(int sid,int cid) {
+        return electiveRepository.getElectivesByStudentIdAndCourseId(sid, cid)
+                .orElse(null);
+    }
+
     public List<Elective> getElectiveByStuIdAndTurId(int sid,int tid) {
-        return electiveRepository.getElectivesByStudentIdAndTutorId(sid, tid).orElse(List.of());
+        List<Elective> electives = new ArrayList<>();
+        List<Course> courses = classService.listCourseByTutorID(tid);
+        for(Course c:courses){
+            Elective elective = classService.getElectiveByStudentIdAndCourseId(sid, c.getId());
+            if(elective!=null){
+                electives.add(elective);
+            }
+        }
+        return electives;
     }
 
     public Elective updateElective(Elective elective) {
