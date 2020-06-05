@@ -6,7 +6,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Component
-public class ResponseComponent {
+public class RequestComponent {
     public int getUid() {
         return (int) RequestContextHolder.currentRequestAttributes()
                 .getAttribute("uid", RequestAttributes.SCOPE_REQUEST);
