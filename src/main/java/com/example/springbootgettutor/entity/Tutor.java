@@ -20,10 +20,16 @@ public class Tutor {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @MapsId
     private User user;
+
+    //The number of students who have been instructed has been determined
     @PositiveOrZero
     private Integer quantity;
+    //The total number of students that can be instructed
     @PositiveOrZero
     private Integer ranges;
+    //Limit the number of students to be screened for rank
+    @PositiveOrZero
+    private Integer reservedRange;
 
     @OneToMany(mappedBy = "tutor")
     private List<Course> courses;
