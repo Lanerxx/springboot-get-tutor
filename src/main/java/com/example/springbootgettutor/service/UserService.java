@@ -1,5 +1,6 @@
 package com.example.springbootgettutor.service;
 
+import com.example.springbootgettutor.entity.Elective;
 import com.example.springbootgettutor.entity.Student;
 import com.example.springbootgettutor.entity.Tutor;
 import com.example.springbootgettutor.entity.User;
@@ -25,6 +26,8 @@ public class UserService {
     private StudentRepository studentRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ClassService classService;
 
     //---------"User's CURD "-----------
     public User updateUserPassword(String password){
@@ -76,6 +79,11 @@ public class UserService {
         studentRepository.deleteById(id);
     }
 
+    public Student updateStudent(Student student){
+        studentRepository.save(student);
+        return student;
+    }
+
     public List<Student> listStudents() {
         return studentRepository.findAll();
     }
@@ -83,11 +91,6 @@ public class UserService {
     public Student getStudent(int id) {
         return studentRepository.findById(id).orElse(new Student());
     }
-
-
-
-
-
 
 
 }

@@ -1,17 +1,17 @@
 package com.example.springbootgettutor.service;
 
-import com.example.springbootgettutor.entity.Course;
-import com.example.springbootgettutor.entity.Direction;
-import com.example.springbootgettutor.entity.Elective;
-import com.example.springbootgettutor.entity.Tutor;
+import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.repository.CourseRepository;
 import com.example.springbootgettutor.repository.DirectionRepository;
 import com.example.springbootgettutor.repository.ElectiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,6 +24,8 @@ public class ClassService {
     private DirectionRepository directionRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ClassService classService;
 
     //---------"Course's CURD "-----------
     public Course addCourse(Course course){
@@ -77,6 +79,19 @@ public class ClassService {
                 .orElse(null);
     }
 
+    public List<Elective> getElectiveByCourseId(int id) {
+        return electiveRepository.getElectivesCourseId(id).orElse(List.of());
+    }
+
+    public List<Elective> getElectiveByStudentId(int id) {
+        return electiveRepository.getElectivesStudentId(id)
+                .orElse(List.of());
+    }
+
+    public List<Elective> getElectiveByStuIdAndTurId(int sid,int tid) {
+        return electiveRepository.getElectivesByStudentIdAndTutorId(sid, tid).orElse(List.of());
+    }
+
     public Elective updateElective(Elective elective) {
         electiveRepository.save(elective);
         return elective;
@@ -102,7 +117,62 @@ public class ClassService {
         return directionRepository.findAll();
     }
 
+    //---------"Calculate the overall Grade ranking"-----------
+    public float calculateWeightedGrade(int sid,int tid){
+        float WeightedGrade = 0;
+        List<Elective> electives = classService.getElectiveByStuIdAndTurId(sid, tid);
+        for(Elective ele :electives) {
+            WeightedGrade += ele.getGrade() * ele.getCourse().getWeight();
+        }
+        return WeightedGrade;
+    }
 
+    public List<Student> RankStudents(int tid){
+        List<Student> students = userService.listStudents();
+        Map<Student, Float> studentGradeMap = new HashMap<>();
+        students.forEach(s ->{
+            float WeightedGrade = calculateWeightedGrade(s.getId(), tid);
+            studentGradeMap.put(s, WeightedGrade);
+        });
+        return studentGradeMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public List<Student> SelectStudents(int tid){
+        Tutor tutor = userService.getTutorById(tid);
+        List<Student> students = RankStudents(tid);
+        return students.subList(0, tutor.getReservedRange());
+
+    }
+
+    public boolean checkQualification(int sid,int tid){
+        Student student = userService.getStudent(sid);
+        List<Elective> electives = classService.getElectiveByStudentId(sid);
+        // Determine if each course is above the LowestMark
+        for (Elective elective : electives) {
+            Course course = elective.getCourse();
+            if (elective.getGrade() < course.getLowestMark()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Your " + course.getName() + " course grade is not up to standard, " +
+                                "the teacher's standard score is " + course.getLowestMark() +
+                                ". Please contact other teachers as soon as possible");
+
+            }
+        }
+
+        //Judge whether the students' comprehensive grades reach the standard
+        List<Student> students = classService.SelectStudents(tid);
+        if (!students.contains(student)) {
+            throw new  ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Your comprehensive score is not up to standard. Please contact other teachers as soon as possible");
+        }
+
+
+        return true;
+    }
 
 
 }
