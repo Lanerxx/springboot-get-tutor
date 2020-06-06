@@ -17,8 +17,10 @@ public class TutorInterceptor implements HandlerInterceptor {
     private RequestComponent requestComponent;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (!(requestComponent.getRole().equals(User.Role.TUTOR))) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
+        User.Role role = requestComponent.getRole();
+        if (role.equals(User.Role.TUTOR) || role.equals(User.Role.ADMIN)){
+        }else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Without permission");
         }
         return true;
