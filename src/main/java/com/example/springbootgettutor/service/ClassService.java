@@ -130,6 +130,16 @@ public class ClassService {
         return directionRepository.findAll();
     }
 
+    public Direction getDirection(int id){
+        return directionRepository.findById(id).orElse(null);
+    }
+
+
+    public List<Direction> getDirections(int sid){
+        return directionRepository.getDirectionByStudentId(sid).orElse(List.of());
+    }
+
+
     //---------"Calculate the overall Grade ranking"-----------
     public float calculateWeightedGrade(int sid,int tid){
         float WeightedGrade = 0;
@@ -164,6 +174,8 @@ public class ClassService {
     public boolean checkQualification(int sid,int tid){
         Student student = userService.getStudent(sid);
         List<Elective> electives = classService.getElectiveByStudentId(sid);
+        Tutor tutor =  student.getTutor();
+
         // Determine if each course is above the LowestMark
         for (Elective elective : electives) {
             Course course = elective.getCourse();
@@ -184,6 +196,11 @@ public class ClassService {
         }
 
 
+        if(tutor!=null){
+            throw new  ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You've already chosen a tutor, your tutor is " + tutor.getUser().getName() + ".");
+
+        }
         return true;
     }
 
