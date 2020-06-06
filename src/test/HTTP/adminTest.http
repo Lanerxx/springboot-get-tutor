@@ -1,0 +1,29 @@
+DELETE http://localhost:8080/api/admin/tutor/5
+Accept: application/json
+authorization: {{token}}
+
+
+###
+//ADMNI:add tutor
+POST http://localhost:8080/api/admin/tutor
+Content-Type: application/json
+authorization: {{token}}
+
+{
+  "number": 202005,
+  "name": "LiuDan"
+}
+
+###
+//ADMIN:login
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "name": "LANER",
+  "password": 1999224492
+}
+
+> {% client.global.set("token", response.headers.valueOf("authorization")); %}
+
+###
