@@ -1,10 +1,7 @@
 package com.example.springbootgettutor.controller;
 
 import com.example.springbootgettutor.component.RequestComponent;
-import com.example.springbootgettutor.entity.Course;
-import com.example.springbootgettutor.entity.Elective;
-import com.example.springbootgettutor.entity.Student;
-import com.example.springbootgettutor.entity.Tutor;
+import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.service.ClassService;
 import com.example.springbootgettutor.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -57,12 +54,17 @@ public class StudentController {
      */
     @GetMapping("information/{tid}")
     public Map getInformation(@PathVariable int tid){
+        boolean qualified = false;
         Tutor tutor = userService.getTutorById(tid);
         List<Course> courses = classService.listCourseByTutorID(tid);
         List<Elective> electives = classService.getElectiveByStuIdAndTurId(requestComponent.getUid(),tid);
+        List<Student> students = classService.RankStudents(tid);
+        qualified = classService.checkQualification(requestComponent.getUid(),tid);
         return Map.of(
                 "courses",courses,
-                "electives",electives
+                "electives",electives,
+                "students",students,
+                "qualified",qualified
         );
     }
 
@@ -72,6 +74,33 @@ public class StudentController {
      * @param:
      * @return:
      */
+    @GetMapping("directions")
+    public Map listDirections(){
+        return Map.of(
+                "directions",classService.listDirections()
+        );
+    }
+    @GetMapping("{sid}/directions")
+    public Map getDirection(@PathVariable int sid){
+        return Map.of(
+                "direction",classService.getDirections(sid)
+        );
+    }
+    @PatchMapping("directions")
+    public Map updateStudentDirections(@RequestBody List<Direction> newDirections) {
+        Student student = userService.getStudent(requestComponent.getUid());
+        List<Direction> oldDirections = student.getDirections();
+        oldDirections.forEach(direction -> {
+            classService.deleteDirection(direction.getId());
+        });
+        newDirections.forEach(direction -> {
+            direction.setStudent(student);
+        });
+        return Map.of(
+                "directions",newDirections
+        );
+    }
+
     @GetMapping("Tutor/{tid}")
     public Map getTutor(@PathVariable int tid){
         String massage = "Sorry, your application failed";
