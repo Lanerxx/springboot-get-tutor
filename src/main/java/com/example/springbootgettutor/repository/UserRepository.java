@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
 import java.util.Optional;
 
 public interface UserRepository extends BaseRepository<User, Integer>{
@@ -12,6 +13,6 @@ public interface UserRepository extends BaseRepository<User, Integer>{
     Optional<User> findByName(String name);
 
     @Modifying
-    @Query("UPDATE User u SET u.password=:passwoed WHERE u.id=:id")
-    int updatePassword(@Param("password") String password,@Param("id") int id);
+    @Query("UPDATE User u SET u.password=:password WHERE u.id=:id")
+    int updatePassword(@Param("password") String password, @Param("id") int id);
 }
