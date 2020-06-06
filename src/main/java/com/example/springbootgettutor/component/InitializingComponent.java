@@ -28,7 +28,7 @@ public class InitializingComponent implements InitializingBean {
             u.setRole(User.Role.ADMIN);
             u.setPassword(encoder.encode(String.valueOf(number)));
             Tutor tutor = new Tutor();
-            tutor.setUser(user);
+            tutor.setUser(u);
             userService.addTutot(tutor);
         }
     }
