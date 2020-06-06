@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +28,7 @@ public class User {
 
     //Student number or tutor number
     @Column(unique = true)
-    @NotBlank(message = "The number cannot be empty")
+    @NotNull(message = "The number cannot be empty")
     private Integer number;
 
     @NotBlank(message = "The name cannot be empty")
