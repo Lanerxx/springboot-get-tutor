@@ -4,6 +4,7 @@ import com.example.springbootgettutor.component.EncryptComponent;
 import com.example.springbootgettutor.component.MyToken;
 import com.example.springbootgettutor.entity.User;
 import com.example.springbootgettutor.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/")
+@Slf4j
 public class LoginController {
+    @Value("${my.admin}")
+    private String roleAdmin;
     @Value("${my.tutor}")
     private String roleTutor;
     @Value("${my.student}")
@@ -34,14 +38,25 @@ public class LoginController {
 
     @PostMapping("login")
     public Map login(@RequestBody User login, HttpServletResponse response) {
-        User user = Optional.ofNullable(userService.getUserByNumber(login.getNumber()))
+        User user = Optional.ofNullable(userService.getUserByName(login.getName()))
                 .filter(u -> encoder.matches(login.getPassword(), u.getPassword()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username and password"));
 
         MyToken token = new MyToken(user.getId(), user.getRole());
         String auth = encrypt.encryptToken(token);
         response.setHeader(MyToken.AUTHORIZATION, auth);
-        String roleCode = user.getRole() == User.Role.TUTOR? roleTutor : roleStudent;
-        return Map.of("role", roleCode);
+        String roleCode = "";
+        if(user.getRole() == User.Role.STUDENT){
+            roleCode = roleStudent;
+        }
+        else if(user.getRole() == User.Role.TUTOR){
+            roleCode = roleTutor;
+        }
+        else if(user.getRole() == User.Role.ADMIN){
+            roleCode = roleAdmin;
+        }
+        return Map.of(
+                "role",roleCode
+        );
     }
 }
