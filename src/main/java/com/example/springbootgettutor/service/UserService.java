@@ -9,6 +9,7 @@ import com.example.springbootgettutor.repository.TutorRepository;
 import com.example.springbootgettutor.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +29,25 @@ public class UserService {
     private UserService userService;
     @Autowired
     private ClassService classService;
+    @Autowired
+    private PasswordEncoder encoder;
 
     //---------"User's CURD "-----------
-    public User updateUserPassword(String password){
-        return new User();
+    public User updateUserPassword(int id, String password){
+        User u = userService.getUserByID(id);
+        u.setPassword(encoder.encode(password));
+        userRepository.save(u);
+        return u;
     }
 
     public User getUserByID(int id){
-        return userRepository.findById(id).orElse(new User());
+        return userRepository.findById(id).orElse(null);
     }
     public User getUserByNumber(int number) {
-        return  userRepository.findByNumber(number).orElse(new User());
+        return  userRepository.findByNumber(number).orElse(null);
     }
     public User getUserByName(String name){
-        return userRepository.findByName(name).orElse(new User());
+        return userRepository.findByName(name).orElse(null);
     }
 
 
@@ -80,6 +86,7 @@ public class UserService {
     }
 
     public Student updateStudent(Student student){
+        studentRepository.deleteById(student.getId());
         studentRepository.save(student);
         return student;
     }
@@ -91,6 +98,8 @@ public class UserService {
     public Student getStudent(int id) {
         return studentRepository.findById(id).orElse(new Student());
     }
-
+    public List<Student> getStudentsByTutorId(int tid){
+        return studentRepository.getStudentsByTutorId(tid).orElse(List.of());
+    }
 
 }
