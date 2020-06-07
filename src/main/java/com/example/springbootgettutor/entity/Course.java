@@ -1,5 +1,6 @@
 package com.example.springbootgettutor.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
+@JsonIgnoreProperties({"electives"})
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +24,10 @@ public class Course {
 
     @Max(value = 1, message = "The weight should be between 0 and 1")
     @Min(value = 0, message = "The weight should be between 0 and 1")
-    private float weight;
+    private double weight;
     @Max(value = 100, message = "The lowest mark should be between 0 and 100")
     @Min(value = 0, message = "The lowest mark should be between 0 and 100")
-    private float lowestMark;
+    private double lowestMark;
 
     @ManyToOne
     private Tutor tutor;
