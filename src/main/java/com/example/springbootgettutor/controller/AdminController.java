@@ -1,6 +1,7 @@
 package com.example.springbootgettutor.controller;
 
 import com.example.springbootgettutor.entity.Course;
+import com.example.springbootgettutor.entity.Student;
 import com.example.springbootgettutor.entity.Tutor;
 import com.example.springbootgettutor.entity.User;
 import com.example.springbootgettutor.service.UserService;
@@ -52,5 +53,26 @@ public class AdminController {
         }
         userService.deletTutor(tid);
         return Map.of("massage", "Successful delete!");
+    }
+
+    @PostMapping("student")
+    public Map addStudent(@Valid @RequestBody User user){
+        Student student = new Student();
+        if(user.getNumber() != null && user.getName() != null){
+            User u = new User();
+            u.setNumber(user.getNumber());
+            u.setName(user.getName());
+            u.setPassword(encoder.encode(String.valueOf(user.getNumber())));
+            u.setRole(User.Role.TUTOR);
+            student.setUser(u);
+            userService.addStudent(student);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Name, number cannot be empty.");
+        }
+        return Map.of(
+                "student",student
+        );
     }
 }
