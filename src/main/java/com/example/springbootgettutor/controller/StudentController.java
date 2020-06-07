@@ -59,7 +59,7 @@ public class StudentController {
         List<Course> courses = classService.listCourseByTutorID(tid);
         List<Elective> electives = classService.getElectiveByStuIdAndTurId(requestComponent.getUid(),tid);
         List<Student> students = classService.RankStudents(tid);
-        qualified = classService.checkQualification(requestComponent.getUid(),tid);
+        qualified = classService.getQualification(requestComponent.getUid(),tid);
         return Map.of(
                 "courses",courses,
                 "electives",electives,
@@ -95,13 +95,14 @@ public class StudentController {
         });
         newDirections.forEach(direction -> {
             direction.setStudent(student);
+            classService.addDirection(direction);
         });
         return Map.of(
                 "directions",newDirections
         );
     }
 
-    @GetMapping("Tutor/{tid}")
+    @GetMapping("tutor/{tid}")
     public Map getTutor(@PathVariable int tid){
         String massage = "Sorry, your application failed";
         Tutor tutor = userService.getTutorById(tid);
@@ -109,11 +110,12 @@ public class StudentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Sorry, there is no vacancy for the teacher, please contact other teachers immediately.");
         }
+        log.debug("{}", classService.checkQualification(requestComponent.getUid(),tid));
 
-        if(!classService.checkQualification(requestComponent.getUid(),tid)){
+        if(classService.checkQualification(requestComponent.getUid(),tid)){
             Student student = userService.getStudent(requestComponent.getUid());
             student.setTutor(tutor);
-            int quan = tutor.getQuantity();
+            int quan = userService.getStudentsByTutorId(requestComponent.getUid()).size();
             tutor.setQuantity(quan+1);
             userService.updateTutor(tutor);
             userService.updateStudent(student);
