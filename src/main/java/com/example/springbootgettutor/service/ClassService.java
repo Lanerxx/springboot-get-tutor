@@ -4,6 +4,7 @@ import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.repository.CourseRepository;
 import com.example.springbootgettutor.repository.DirectionRepository;
 import com.example.springbootgettutor.repository.ElectiveRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class ClassService {
     @Autowired
     private CourseRepository courseRepository;
@@ -49,11 +51,23 @@ public class ClassService {
         return course;
     }
 
+
+    public Course getCourse(String name,int tid){
+        List<Course> courses = classService.listCourseByTutorID(tid);
+        Course course = null;
+        for (Course c : courses) {
+            if (c.getName().equals(name)) {
+                course = c;
+            }
+        }
+        return course;
+
+    }
     public Course getCourse(int id){
-        return courseRepository.findById(id).orElse(new Course());
+        return courseRepository.findById(id).orElse(null);
     }
     public Course getCourse(String name){
-        return courseRepository.findByName(name).orElse(new Course());
+        return courseRepository.findByName(name).orElse(null);
     }
     public List<Course> listCourses(){
         return courseRepository.findAll();
@@ -141,7 +155,20 @@ public class ClassService {
 
 
     //---------"Calculate the overall Grade ranking"-----------
+    public boolean checkSettings(int tid){
+        List<Course> courses = classService.listCourseByTutorID(tid);
+        if (courses == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"You have not added any courses！");
+        }
+        courses.forEach(c->{
+            if (c.getWeight()==0){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"You have a course that has not yet been weighted!");
+            }
+        });
+        return true;
+    }
     public float calculateWeightedGrade(int sid,int tid){
+        checkSettings(tid);
         float WeightedGrade = 0;
         List<Elective> electives = classService.getElectiveByStuIdAndTurId(sid, tid);
         for(Elective ele :electives) {
@@ -156,6 +183,8 @@ public class ClassService {
         students.forEach(s ->{
             float WeightedGrade = calculateWeightedGrade(s.getId(), tid);
             studentGradeMap.put(s, WeightedGrade);
+            userService.updateStudentWeightGrade(s.getId(),WeightedGrade);
+
         });
         return studentGradeMap.entrySet()
                 .stream()
@@ -167,15 +196,39 @@ public class ClassService {
     public List<Student> SelectStudents(int tid){
         Tutor tutor = userService.getTutorById(tid);
         List<Student> students = RankStudents(tid);
-        return students.subList(0, tutor.getReservedRange());
+        int ran = students.size() < tutor.getReservedRange() ? students.size() : tutor.getReservedRange();
+        return students.subList(0, ran);
 
+    }
+    public boolean getQualification(int sid,int tid){
+        boolean qualification = true;
+        Student student = userService.getStudent(sid);
+        List<Elective> electives = classService.getElectiveByStudentId(sid);
+        Tutor tutor =  student.getTutor();
+        // Determine if each course is above the LowestMark
+        for (Elective elective : electives) {
+            Course course = elective.getCourse();
+            if (elective.getGrade() < course.getLowestMark()) {
+                qualification = false;
+            }
+        }
+
+        //Judge whether the students' comprehensive grades reach the standard
+        List<Student> students = classService.SelectStudents(tid);
+        if (!students.contains(student)) {
+            qualification = false;
+        }
+
+        if(tutor!=null){
+            qualification = false;
+        }
+        return qualification;
     }
 
     public boolean checkQualification(int sid,int tid){
         Student student = userService.getStudent(sid);
         List<Elective> electives = classService.getElectiveByStudentId(sid);
         Tutor tutor =  student.getTutor();
-
         // Determine if each course is above the LowestMark
         for (Elective elective : electives) {
             Course course = elective.getCourse();
@@ -184,7 +237,6 @@ public class ClassService {
                         "Your " + course.getName() + " course grade is not up to standard, " +
                                 "the teacher's standard score is " + course.getLowestMark() +
                                 ". Please contact other teachers as soon as possible");
-
             }
         }
 
@@ -195,12 +247,11 @@ public class ClassService {
                     "Your comprehensive score is not up to standard. Please contact other teachers as soon as possible");
         }
 
-
         if(tutor!=null){
             throw new  ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You've already chosen a tutor, your tutor is " + tutor.getUser().getName() + ".");
-
         }
+
         return true;
     }
 
