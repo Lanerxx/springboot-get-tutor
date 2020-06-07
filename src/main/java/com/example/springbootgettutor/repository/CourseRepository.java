@@ -17,6 +17,9 @@ public interface CourseRepository extends BaseRepository<Course, Integer> {
     @Query("SELECT c FROM Course c WHERE c.tutor.id=:id")
     Optional<List<Course>> getCourseByTutor(@Param("id")int id);
 
+    @Query("SELECT c FROM Course c WHERE c.name=:name AND c.tutor.id=:id")
+    Optional<Course> getCourseByNameAndTutorId(@Param("name")String name,@Param("id")int id);
+
     @Modifying
     @Query("UPDATE Course c SET c.lowestMark=:lowestMark WHERE c.id=:id")
     int updateLowestMark(@Param("lowestMark") float lowestMark,@Param("id")int id);
