@@ -39,7 +39,6 @@ public class UserService {
         userRepository.save(u);
         return u;
     }
-
     public User getUserByID(int id){
         return userRepository.findById(id).orElse(null);
     }
@@ -86,11 +85,20 @@ public class UserService {
     }
 
     public Student updateStudent(Student student){
-        studentRepository.deleteById(student.getId());
         studentRepository.save(student);
         return student;
     }
 
+    public Student updateStudentWeightGrade(int sid,double weightedGrade){
+        Student s = userService.getStudent(sid);
+        s.setWeightedGrade(weightedGrade);
+        studentRepository.save(s);
+        return s;
+    }
+
+    public Student getStudentByUserNumber(int number){
+        return studentRepository.getStudentsByUserNumber(number).orElse(null);
+    }
     public List<Student> listStudents() {
         return studentRepository.findAll();
     }
