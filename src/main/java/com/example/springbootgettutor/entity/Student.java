@@ -17,7 +17,7 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private float weightedGrade;
+    private double weightedGrade;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @MapsId
