@@ -74,17 +74,37 @@ public class TutorController {
     }
 
     //Course weight Information
-    @PatchMapping("courses")
+    @PatchMapping("course")
     public Map updateCourse(@Valid @RequestBody Course course) {
         Tutor tutor = userService.getTutorById(requestComponent.getUid());
-        Course OldCourse = classService.getCourse(course.getId());
-        if(OldCourse == null){
+        Course c = classService.getCourse(course.getId());
+        if(c == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The course you want to change doesn't exist");
         }
-        classService.updateCourse(course);
+        c.setWeight(course.getWeight());
+        c.setLowestMark(course.getLowestMark());
+        c.setName(course.getName());
+        classService.updateCourse(c);
         return Map.of(
-                "course",course
+                "course",c
+        );
+    }
+
+    //Course Information Set to Default
+    @PatchMapping("courses")
+    public Map updateCourse() {
+        Tutor tutor = userService.getTutorById(requestComponent.getUid());
+        List<Course> courses = classService.listCourseByTutorID(tutor.getId());
+        courses.forEach(c->{
+            Course course = classService.getCourse(c.getId());
+            course.setWeight(0.5);
+            course.setLowestMark(60);
+            classService.updateCourse(course);
+        });
+        courses = classService.listCourseByTutorID(tutor.getId());
+        return Map.of(
+                "courses",courses
         );
     }
 
@@ -104,23 +124,33 @@ public class TutorController {
         electives.forEach(elective -> {
             Student student = elective.getStudent();
             Course course = elective.getCourse();
+            Student s = userService.getStudentByUserNumber(elective.getStudent().getUser().getNumber());
+            Course c = classService.getCourse(course.getName(), tutor.getId());
             if(student == null || course == null){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Students and classes cannot be empty");
             }
-            if(userService.getStudent(student.getId())==null){
+            if(s == null){
                 User u = new User();
+                u.setName(student.getUser().getName());
                 u.setNumber(student.getUser().getNumber());
                 u.setRole(User.Role.STUDENT);
                 u.setPassword(encoder.encode(String.valueOf(student.getUser().getNumber())));
-                student.setUser(u);
-                userService.addStudent(student);
+                s = new Student();
+                s.setUser(u);
+                userService.addStudent(s);
             }
-            if(classService.getCourse(course.getId())==null){
-                course.setTutor(tutor);
-                classService.addCourse(course);
+            if(c == null){
+                c = new Course();
+                c.setName(course.getName());
+                c.setTutor(tutor);
+                classService.addCourse(c);
             }
-            classService.addElective(elective);
+            Elective e = new Elective();
+            e.setGrade(elective.getGrade());
+            e.setStudent(userService.getStudent(s.getId()));
+            e.setCourse(classService.getCourse(course.getName(), tutor.getId()));
+            classService.addElective(e);
         });
         return Map.of(
                 "electives",electives
@@ -154,14 +184,16 @@ public class TutorController {
 
     @PatchMapping("direction")
     public Map updateDirection(@Valid @RequestBody Direction direction){
-        if(classService.getDirection(direction.getId())==null){
+        Direction d =  classService.getDirection(direction.getId());
+        if(d==null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The direction you want to change does not exist");
 
         }
-        classService.updateDirection(direction);
+        d.setName(direction.getName());
+        classService.updateDirection(d);
         return Map.of(
-                "direction",direction
+                "direction",d
         );
     }
 
@@ -185,11 +217,47 @@ public class TutorController {
         );
     }
 
+    //Student Ranking
+    @GetMapping("ranking")
+    public Map getStudents(){
+        List<Student> students = classService.RankStudents(requestComponent.getUid());
+        return Map.of(
+                "student",students
+        );
+    }
 
-
-
-
-
+    //Elected in advance
+    @PostMapping("advance")
+    public Map electStudentAdvance(@Valid @RequestBody Student student){
+        Tutor tutor = userService.getTutorById(requestComponent.getUid());
+        int quan = userService.getStudentsByTutorId(requestComponent.getUid()).size();
+        int ran = tutor.getRanges();
+        if(quan >= ran){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The number of students instructed has reached the upper limit！");
+        }
+        if(userService.getUserByNumber(student.getUser().getNumber())==null){
+            User u = new User();
+            u.setName(student.getUser().getName());
+            u.setNumber(student.getUser().getNumber());
+            u.setRole(User.Role.STUDENT);
+            u.setPassword(encoder.encode(String.valueOf(student.getUser().getNumber())));
+            Student s = new Student();
+            s.setUser(u);
+            s.setTutor(tutor);
+            userService.addStudent(s);
+        }
+        else {
+            Student student1 = userService.getStudentByUserNumber(student.getUser().getNumber());
+            student1.setTutor(tutor);
+            userService.updateStudent(student1);
+        }
+        tutor.setQuantity(quan+1);
+        userService.updateTutor(tutor);
+        return Map.of(
+                "student",student
+        );
+    }
 
 
 }
