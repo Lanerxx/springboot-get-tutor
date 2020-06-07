@@ -1,7 +1,32 @@
-DELETE http://localhost:8080/api/admin/tutor/5
+//ADMIN:update password
+PATCH http://localhost:8080/api/user/settings/password
+Content-Type: application/json
+authorization: {{token}}
+
+
+{
+  "oldPassword":"1999224492",
+  "newPassword":"2020224492",
+  "confirmNewPassword": "2020224492"
+}
+
+###
+//ADMIN:delete tutor
+DELETE http://localhost:8080/api/admin/tutor/2
 Accept: application/json
 authorization: {{token}}
 
+
+###
+//ADMNI:add student
+POST http://localhost:8080/api/admin/student
+Content-Type: application/json
+authorization: {{token}}
+
+{
+  "number": 20200000,
+  "name": "Qrter"
+}
 
 ###
 //ADMNI:add tutor
@@ -10,8 +35,8 @@ Content-Type: application/json
 authorization: {{token}}
 
 {
-  "number": 202005,
-  "name": "LiuDan"
+  "number": 202002,
+  "name": "LiLi"
 }
 
 ###
