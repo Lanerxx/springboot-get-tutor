@@ -35,8 +35,8 @@ Content-Type: application/json
 authorization: {{token}}
 
 {
-  "number": 202002,
-  "name": "LiLi"
+  "number": 202001,
+  "name": "BO"
 }
 
 ###
@@ -46,6 +46,7 @@ Content-Type: application/json
 
 {
   "name": "LANER",
+  "number": 1999224492,
   "password": 1999224492
 }
 
