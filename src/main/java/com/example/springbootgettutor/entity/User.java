@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class User {
     //Student number or tutor number
     @Column(unique = true)
     @NotNull(message = "The number cannot be empty")
+    @Min(value = 99999, message = "Numbers should be at least six digits")
     private Integer number;
 
     @NotBlank(message = "The name cannot be empty")

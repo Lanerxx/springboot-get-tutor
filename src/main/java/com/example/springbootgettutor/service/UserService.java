@@ -110,4 +110,10 @@ public class UserService {
         return studentRepository.getStudentsByTutorId(tid).orElse(List.of());
     }
 
+    //---------"User's CURD "-----------
+
+    public User updateUser(User user){
+        userRepository.save(user);
+        return user;
+    }
 }
