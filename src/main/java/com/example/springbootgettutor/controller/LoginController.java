@@ -38,9 +38,13 @@ public class LoginController {
 
     @PostMapping("login")
     public Map login(@RequestBody User login, HttpServletResponse response) {
-        User user = Optional.ofNullable(userService.getUserByName(login.getName()))
+        User user = Optional.ofNullable(userService.getUserByNumber(login.getNumber()))
                 .filter(u -> encoder.matches(login.getPassword(), u.getPassword()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username and password"));
+
+//        User user = Optional.ofNullable(userService.getUserByName(login.getName()))
+//                .filter(u -> encoder.matches(login.getPassword(), u.getPassword()))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username and password"));
 
         MyToken token = new MyToken(user.getId(), user.getRole());
         String auth = encrypt.encryptToken(token);
