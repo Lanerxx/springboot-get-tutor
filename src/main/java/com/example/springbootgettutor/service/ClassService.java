@@ -1,5 +1,6 @@
 package com.example.springbootgettutor.service;
 
+import com.example.springbootgettutor.controller.vo.CourseGradeVO;
 import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.repository.CourseRepository;
 import com.example.springbootgettutor.repository.DirectionRepository;
@@ -196,6 +197,7 @@ public class ClassService {
     public List<Student> SelectStudents(int tid){
         Tutor tutor = userService.getTutorById(tid);
         List<Student> students = RankStudents(tid);
+        log.debug("students.size():{} / tutor.getReservedRange():{} ", students.size(),tutor.getReservedRange());
         int ran = students.size() < tutor.getReservedRange() ? students.size() : tutor.getReservedRange();
         return students.subList(0, ran);
 
@@ -255,5 +257,33 @@ public class ClassService {
         return true;
     }
 
+    //the grade of a student's assigned course set
+    public List<CourseGradeVO> listGradeByCourses(List<Course> courses, int sid) {
+        List<CourseGradeVO> courseGradeVOs = new ArrayList<>();
+        courses.forEach(c -> {
+                    CourseGradeVO cGVO = new CourseGradeVO();
+                    Elective e = classService.getElectiveByStudentIdAndCourseId(sid, c.getId());
+                    if(e !=null){
+                        cGVO.setGrade(e.getGrade());
+                    }
+                    else {
+                        cGVO.setGrade(0);
+                    }
+                    cGVO.setCourse(c);
+                    cGVO.setSid(sid);
+                    courseGradeVOs.add(cGVO);
+                }
+        );
+        return courseGradeVOs;
+    }
+
+    public int getRankingIndex(List<Student> students,int sid){
+        int rankIndex = 0;
+        for (int i = 0; i < students.size(); i++) {
+            if(students.get(i).getId() == sid)
+                rankIndex = i+1;
+        }
+        return rankIndex;
+    }
 
 }
