@@ -33,6 +33,9 @@ public class AdminController {
             u.setName(user.getName());
             u.setPassword(encoder.encode(String.valueOf(user.getNumber())));
             u.setRole(User.Role.TUTOR);
+            tutor.setQuantity(0);
+            tutor.setRanges(30);
+            tutor.setReservedRange(50);
             tutor.setUser(u);
             userService.addTutot(tutor);
         }
