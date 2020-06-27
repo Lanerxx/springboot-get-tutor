@@ -62,8 +62,9 @@ public class TutorController {
         Student s = new Student();
         s.setUser(u);
         userService.addStudent(s);
+        List<Student> students = userService.listStudents();
         return Map.of(
-                "student",s
+                "students",students
         );
 
     }
@@ -71,8 +72,9 @@ public class TutorController {
     @DeleteMapping("student/{sid}")
     public Map deleteStudent(@PathVariable int sid) {
         userService.deleteStudent(sid);
+        List<Student> students = userService.listStudents();
         return Map.of(
-                "massage","successful delete!"
+                "students",students
         );
     }
 
@@ -88,8 +90,9 @@ public class TutorController {
         u.setNumber(student.getUser().getNumber());
         u.setName(student.getUser().getName());
         userService.updateUser(u);
+        List<Student> students = userService.listStudents();
         return Map.of(
-                "student",student
+                "students",students
         );
     }
 
@@ -117,15 +120,18 @@ public class TutorController {
         });
         course.setTutor(tutor);
         classService.addCourse(course);
+        List<Course> courses1 = classService.listCourseByTutorID(requestComponent.getUid());
         return Map.of(
-                "course",course
+                "courses",courses1
         );
     }
 
     @DeleteMapping("courses/{cid}")
     public Map deleteCourses(@PathVariable int cid) {
         classService.deleteCourse(cid);
+        List<Course> courses = classService.listCourseByTutorID(requestComponent.getUid());
         return Map.of(
+                "courses",courses,
                 "massage","successful delete!"
         );
     }
@@ -144,8 +150,9 @@ public class TutorController {
         c.setLowestMark(course.getLowestMark());
         c.setName(course.getName());
         classService.updateCourse(c);
+        List<Course> courses = classService.listCourseByTutorID(requestComponent.getUid());
         return Map.of(
-                "course",c
+                "courses",courses
         );
     }
 
@@ -293,6 +300,7 @@ public class TutorController {
     //Tutor Information
     @PatchMapping("information/ranges/{ranges}/reservedRange/{reservedRange}")
     public Map updateTutor(@PathVariable int ranges, @PathVariable int reservedRange){
+        log.debug("{}/{}", ranges,reservedRange);
         Tutor tutor = userService.getTutorById(requestComponent.getUid());
         tutor.setRanges(ranges);
         tutor.setReservedRange(reservedRange);
@@ -329,6 +337,7 @@ public class TutorController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The number of students instructed has reached the upper limit！");
         }
+        log.debug("{}", student.getUser().getNumber());
         if(userService.getUserByNumber(student.getUser().getNumber())==null){
             User u = new User();
             u.setName(student.getUser().getName());
@@ -342,6 +351,10 @@ public class TutorController {
         }
         else {
             Student student1 = userService.getStudentByUserNumber(student.getUser().getNumber());
+            if(student1.getTutor()!=null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "The student has already chosen a tutor");
+            }
             student1.setTutor(tutor);
             userService.updateStudent(student1);
         }
