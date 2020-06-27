@@ -1,6 +1,7 @@
 package com.example.springbootgettutor.controller;
 
 import com.example.springbootgettutor.component.RequestComponent;
+import com.example.springbootgettutor.controller.vo.CourseGradeVO;
 import com.example.springbootgettutor.entity.*;
 import com.example.springbootgettutor.service.ClassService;
 import com.example.springbootgettutor.service.UserService;
@@ -38,7 +39,7 @@ public class StudentController {
         List<Tutor> tutors = userService.listTutors();
         return Map.of(
                 "student",student,
-                "tutors",tutors
+                "tutors", tutors.subList(1, tutors.size())
         );
     }
 
@@ -55,16 +56,19 @@ public class StudentController {
     @GetMapping("information/{tid}")
     public Map getInformation(@PathVariable int tid){
         boolean qualified = false;
+        Student student = userService.getStudent(requestComponent.getUid());
         Tutor tutor = userService.getTutorById(tid);
-        List<Course> courses = classService.listCourseByTutorID(tid);
-        List<Elective> electives = classService.getElectiveByStuIdAndTurId(requestComponent.getUid(),tid);
+        List<CourseGradeVO> courseGradeVOS = classService.listGradeByCourses(classService.listCourseByTutorID(tid), requestComponent.getUid());
         List<Student> students = classService.RankStudents(tid);
+        int rankingIndex = classService.getRankingIndex(students, requestComponent.getUid());
         qualified = classService.getQualification(requestComponent.getUid(),tid);
         return Map.of(
-                "courses",courses,
-                "electives",electives,
+                "courseGradeVOS",courseGradeVOS,
                 "students",students,
-                "qualified",qualified
+                "qualified",qualified,
+                "tutor",tutor,
+                "student",student,
+                "rankingIndex",rankingIndex
         );
     }
 
@@ -110,19 +114,20 @@ public class StudentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Sorry, there is no vacancy for the teacher, please contact other teachers immediately.");
         }
-        log.debug("{}", classService.checkQualification(requestComponent.getUid(),tid));
-
         if(classService.checkQualification(requestComponent.getUid(),tid)){
-            Student student = userService.getStudent(requestComponent.getUid());
-            student.setTutor(tutor);
-            int quan = userService.getStudentsByTutorId(requestComponent.getUid()).size();
+            int quan = userService.getStudentsByTutorId(tid).size();
+            userService.getStudentsByTutorId(tid).forEach(s->log.debug("{}", s.getUser().getName()));
+            log.debug("{}", userService.getStudentsByTutorId(tid).size());
             tutor.setQuantity(quan+1);
             userService.updateTutor(tutor);
+            Student student = userService.getStudent(requestComponent.getUid());
+            student.setTutor(tutor);
             userService.updateStudent(student);
             massage = "Congratulations, your application has been successful";
         }
+        Student student = userService.getStudent(requestComponent.getUid());
         return Map.of(
-                "massage",massage
+                "student",student
         );
 
     }
